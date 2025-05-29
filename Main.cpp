@@ -1,4 +1,5 @@
 #include <iostream>
+#include <thread>
 
 #include <SDL2/SDL.h>
 #include <rtmidi/RtMidi.h>
@@ -95,6 +96,14 @@ int main()
 	Result = system("clear");
 
 	TheRtMidiIn.openPort(MidiInDevice);
+
+	vector<unsigned char> PreBuffer;
+	while (true)
+	{
+		TheRtMidiIn.getMessage(&PreBuffer);
+		if (PreBuffer.size() == 0) { break; }
+	}
+
 	TheRtMidiIn.ignoreTypes(false, false, true);
 	TheRtMidiIn.setCallback(MidiInCallback, nullptr);
 
