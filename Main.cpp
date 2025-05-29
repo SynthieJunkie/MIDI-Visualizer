@@ -101,13 +101,11 @@ int main()
 	Result = SDL_Init(SDL_INIT_VIDEO);
 	if (Result < 0) { throw runtime_error("Error: SDL_Init"); }
 
-	SDL_Window* SdlWindow = SDL_CreateWindow(Title.data(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, Width, Height, SDL_WINDOW_HIDDEN);
+	SDL_Window* SdlWindow = SDL_CreateWindow(Title.data(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, Width, Height, SDL_WINDOW_HIDDEN);
 	if (SdlWindow == NULL) { throw runtime_error("Error: SDL_CreateWindow"); }
 
 	SDL_Renderer*SdlRenderer = SDL_CreateRenderer(SdlWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 	if (SdlRenderer == NULL) { throw runtime_error("Error: SDL_CreateRenderer"); }
-
-
 
 	SDL_Event SdlEvent;
 	SDL_Rect SdlRect;
@@ -116,8 +114,6 @@ int main()
 	bool IsRunning = true;
 
 	SDL_ShowWindow(SdlWindow);
-
-
 
 	while (IsRunning)
 	{
@@ -176,20 +172,20 @@ int main()
 				int G = BarG * VelocityVector[I1] * 2 / 255;
 				int B = BarB * VelocityVector[I1] * 2 / 255;
 
-				SDL_SetRenderDrawColor(SdlRenderer, R, G, B, 255);
 				SdlRect.x = X;
 				SdlRect.y = Height - 52;
 				SdlRect.w = 16;
 				SdlRect.h = 49;
+				SDL_SetRenderDrawColor(SdlRenderer, R, G, B, 255);
 				SDL_RenderFillRect(SdlRenderer, &SdlRect);
 			}
 			else
 			{
-				SDL_SetRenderDrawColor(SdlRenderer, 255, 255, 255, 255);
 				SdlRect.x = X;
 				SdlRect.y = Height - 52;
 				SdlRect.w = 16;
 				SdlRect.h = 49;
+				SDL_SetRenderDrawColor(SdlRenderer, 255, 255, 255, 255);
 				SDL_RenderFillRect(SdlRenderer, &SdlRect);
 			}
 
@@ -223,20 +219,20 @@ int main()
 				int G = BarG * VelocityVector[I1] / 255;
 				int B = BarB * VelocityVector[I1] / 255;
 
-				SDL_SetRenderDrawColor(SdlRenderer, R, G, B, 255);
 				SdlRect.x = X;
 				SdlRect.y = Height - 52;
 				SdlRect.w = 13;
 				SdlRect.h = 29;
+				SDL_SetRenderDrawColor(SdlRenderer, R, G, B, 255);
 				SDL_RenderFillRect(SdlRenderer, &SdlRect);
 			}
 			else 
 			{
-				SDL_SetRenderDrawColor(SdlRenderer, 0, 0, 0, 255);
 				SdlRect.x = X;
 				SdlRect.y = Height - 52;
 				SdlRect.w = 13;
 				SdlRect.h = 29;
+				SDL_SetRenderDrawColor(SdlRenderer, 0, 0, 0, 255);
 				SDL_RenderFillRect(SdlRenderer, &SdlRect);
 			}
 
@@ -355,7 +351,7 @@ int main()
 			if (ParticleVector[I].PositionY < 0) { DoDelete = true; }
 			if (ParticleVector[I].PositionX > Width - 1) { DoDelete = true; }
 			if (ParticleVector[I].PositionY > Height - 1) { DoDelete = true; }
-			if (ParticleVector[I].R < 1 && ParticleVector[I].G < 1 && ParticleVector[I].B) { DoDelete = true; }
+			if (ParticleVector[I].R < 1 && ParticleVector[I].G < 1 && ParticleVector[I].B < 1) { DoDelete = true; }
 
 			if (DoDelete)
 			{
@@ -363,11 +359,11 @@ int main()
 				continue;
 			}
 
-			SDL_SetRenderDrawColor(SdlRenderer, ParticleVector[I].R, ParticleVector[I].G, ParticleVector[I].B, 255);
 			SdlRect.x = ParticleVector[I].PositionX - 1;
 			SdlRect.y = ParticleVector[I].PositionY - 1;
 			SdlRect.w = 3;
 			SdlRect.h = 3;
+			SDL_SetRenderDrawColor(SdlRenderer, ParticleVector[I].R, ParticleVector[I].G, ParticleVector[I].B, 255);
 			SDL_RenderFillRect(SdlRenderer, &SdlRect);
 		}
 
@@ -392,6 +388,7 @@ int main()
 
 			int RectStart = -1;
 			int RectEnd = -1;
+
 			for (int I2 = 0; I2 < 664; I2++)
 			{
 				int R = BarR * BarArray[I1][I2] * 2 / 255;
@@ -445,6 +442,7 @@ int main()
 
 			int RectStart = -1;
 			int RectEnd = -1;
+
 			for (int I2 = 0; I2 < 664; I2++)
 			{
 				int R = BarR * BarArray[I1][I2] * 2 / 255;
@@ -503,7 +501,7 @@ int main()
 		SDL_SetRenderDrawColor(SdlRenderer, 127, 127, 127, 255);
 		SDL_RenderDrawRect(SdlRenderer, &SdlRect);
 
-		//Line Over Keys
+		//Line Above Keys
 		SDL_RenderDrawLine(SdlRenderer, 2, Height - 53, Width - 4, Height - 53);
 
 		SDL_RenderPresent(SdlRenderer);
