@@ -1,12 +1,8 @@
 #include <iostream>
-#include <thread>
-
 #include <SDL2/SDL.h>
 #include <rtmidi/RtMidi.h>
 
 using namespace std;
-
-
 
 vector<int> VelocityVector = vector<int>(128);
 
@@ -47,7 +43,7 @@ int main()
 	int Height = 720;
 
 	RtMidiIn TheRtMidiIn;
-	int MidiInDevice = -1;
+	int MidiInDevice = 2;
 
 	int BarR = 63;
 	int BarG = 127;
@@ -113,7 +109,7 @@ int main()
 	SDL_Window* SdlWindow = SDL_CreateWindow(Title.data(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, Width, Height, SDL_WINDOW_HIDDEN);
 	if (SdlWindow == NULL) { throw runtime_error("Error: SDL_CreateWindow"); }
 
-	SDL_Renderer*SdlRenderer = SDL_CreateRenderer(SdlWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+	SDL_Renderer* SdlRenderer = SDL_CreateRenderer(SdlWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 	if (SdlRenderer == NULL) { throw runtime_error("Error: SDL_CreateRenderer"); }
 
 	SDL_Event SdlEvent;
@@ -514,10 +510,9 @@ int main()
 		SDL_RenderDrawLine(SdlRenderer, 2, Height - 53, Width - 4, Height - 53);
 
 		SDL_RenderPresent(SdlRenderer);
+
 		Frame++;
 	}
-
-
 
 	TheRtMidiIn.cancelCallback();
 	TheRtMidiIn.closePort();
