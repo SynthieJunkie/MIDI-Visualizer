@@ -43,7 +43,7 @@ int main()
 	int Height = 720;
 
 	RtMidiIn TheRtMidiIn;
-	int MidiInDevice = 2;
+	int MidiInDevice = -1;
 
 	int BarR = 63;
 	int BarG = 127;
