@@ -45,13 +45,17 @@ int main()
 	RtMidiIn TheRtMidiIn;
 	int MidiInDevice = -1;
 
-	int BarR = 63;
-	int BarG = 127;
-	int BarB = 255;
+	int WhiteBarR = 63;
+	int WhiteBarG = 127;
+	int WhiteBarB = 255;
+
+	int BlackBarR = 47;
+	int BlackBarG = 95;
+	int BlackBarB = 191;
 
 	int NoteSpeed = 3;
 	int BarArray[128][664];
-	int BarsCount;
+	int BarsCount = 0;
 
 	double D2R = M_PI / 180.0;
 
@@ -93,11 +97,11 @@ int main()
 
 	TheRtMidiIn.openPort(MidiInDevice);
 
-	vector<unsigned char> PreBuffer;
+	vector<unsigned char> MessageBuffer;
 	while (true)
 	{
-		TheRtMidiIn.getMessage(&PreBuffer);
-		if (PreBuffer.size() == 0) { break; }
+		TheRtMidiIn.getMessage(&MessageBuffer);
+		if (MessageBuffer.size() == 0) { break; }
 	}
 
 	TheRtMidiIn.ignoreTypes(false, false, true);
@@ -128,7 +132,9 @@ int main()
 			if (SdlEvent.type == SDL_QUIT) { IsRunning = false; }
 		}
 
-		//Move Bars
+
+
+		//Update: Move Bars
 		BarsCount = 0;
 		for (int I1 = 0; I1 < 128; I1++)
 		{
@@ -150,120 +156,13 @@ int main()
 			}
 		}
 
-		SDL_SetRenderDrawColor(SdlRenderer, 0, 0, 0, 255);
-		SDL_RenderClear(SdlRenderer);
-
-		//White Keys
+		//Update: Create Particles White Keys
 		int OffsetX = 0;
 		for (int I1 = 0; I1 < 128; I1++)
 		{
-			int Note = I1 % 12;
-			bool IsWhiteKey = false;
-			if (Note == 0) { IsWhiteKey = true; }
-			if (Note == 2) { IsWhiteKey = true; }
-			if (Note == 4) { IsWhiteKey = true; }
-			if (Note == 5) { IsWhiteKey = true; }
-			if (Note == 7) { IsWhiteKey = true; }
-			if (Note == 9) { IsWhiteKey = true; }
-			if (Note == 11) { IsWhiteKey = true; }
-
-			if (!IsWhiteKey) { continue; }
+			if (((1354 >> (I1 % 12)) % 2) == 1) { continue; }
 
 			int X = OffsetX * 17 + 3;
-
-			if (VelocityVector[I1] > 0)
-			{
-				int R = BarR * VelocityVector[I1] * 2 / 255;
-				int G = BarG * VelocityVector[I1] * 2 / 255;
-				int B = BarB * VelocityVector[I1] * 2 / 255;
-
-				SdlRect.x = X;
-				SdlRect.y = Height - 52;
-				SdlRect.w = 16;
-				SdlRect.h = 49;
-				SDL_SetRenderDrawColor(SdlRenderer, R, G, B, 255);
-				SDL_RenderFillRect(SdlRenderer, &SdlRect);
-			}
-			else
-			{
-				SdlRect.x = X;
-				SdlRect.y = Height - 52;
-				SdlRect.w = 16;
-				SdlRect.h = 49;
-				SDL_SetRenderDrawColor(SdlRenderer, 255, 255, 255, 255);
-				SDL_RenderFillRect(SdlRenderer, &SdlRect);
-			}
-
-			SdlRect.x = X;
-			SdlRect.y = Height - 52;
-			SdlRect.w = 16;
-			SdlRect.h = 49;
-			SDL_RenderDrawRect(SdlRenderer, &SdlRect);
-			OffsetX++;
-		}
-
-		//Black Keys
-		OffsetX = 0;
-		for (int I1 = 0; I1 < 128; I1++)
-		{
-			int Note = I1 % 12;
-			bool IsBlackKey = false;
-			if (Note == 1) { IsBlackKey = true; }
-			if (Note == 3) { IsBlackKey = true; }
-			if (Note == 6) { IsBlackKey = true; }
-			if (Note == 8) { IsBlackKey = true; }
-			if (Note == 10) { IsBlackKey = true; }
-
-			if (!IsBlackKey) { continue; }
-
-			int X = OffsetX * 17 + 13;
-
-			if (VelocityVector[I1] > 0)
-			{
-				int R = BarR * VelocityVector[I1] / 255;
-				int G = BarG * VelocityVector[I1] / 255;
-				int B = BarB * VelocityVector[I1] / 255;
-
-				SdlRect.x = X;
-				SdlRect.y = Height - 52;
-				SdlRect.w = 13;
-				SdlRect.h = 29;
-				SDL_SetRenderDrawColor(SdlRenderer, R, G, B, 255);
-				SDL_RenderFillRect(SdlRenderer, &SdlRect);
-			}
-			else 
-			{
-				SdlRect.x = X;
-				SdlRect.y = Height - 52;
-				SdlRect.w = 13;
-				SdlRect.h = 29;
-				SDL_SetRenderDrawColor(SdlRenderer, 0, 0, 0, 255);
-				SDL_RenderFillRect(SdlRenderer, &SdlRect);
-			}
-
-			OffsetX++;
-			if (Note == 3) { OffsetX++; }
-			if (Note == 10) { OffsetX++; }
-		}
-
-		//Particles White Keys
-		OffsetX = 0;
-		for (int I1 = 0; I1 < 128; I1++)
-		{
-			int Note = I1 % 12;
-			bool IsWhiteKey = false;
-			if (Note == 0) { IsWhiteKey = true; }
-			if (Note == 2) { IsWhiteKey = true; }
-			if (Note == 4) { IsWhiteKey = true; }
-			if (Note == 5) { IsWhiteKey = true; }
-			if (Note == 7) { IsWhiteKey = true; }
-			if (Note == 9) { IsWhiteKey = true; }
-			if (Note == 11) { IsWhiteKey = true; }
-
-			if (!IsWhiteKey) { continue; }
-
-			int X = OffsetX * 17 + 3;
-			int Y = Height - 52;
 
 			if (VelocityVector[I1] > 0)
 			{
@@ -276,9 +175,9 @@ int main()
 				NewParticle.AcellerationY = -(rand() / (float)RAND_MAX) - 0.01;
 
 				NewParticle.MaxVelocity = NoteSpeed;
-				NewParticle.R = BarR * VelocityVector[I1] * 2 / 255;
-				NewParticle.G = BarG * VelocityVector[I1] * 2 / 255;
-				NewParticle.B = BarB * VelocityVector[I1] * 2 / 255;
+				NewParticle.R = WhiteBarR * VelocityVector[I1] * 2 / 255;
+				NewParticle.G = WhiteBarG * VelocityVector[I1] * 2 / 255;
+				NewParticle.B = WhiteBarB * VelocityVector[I1] * 2 / 255;
 
 				NewParticle.Fading = 0.99;
 				NewParticle.ParticleModulationX = BarsCount - 1;
@@ -289,22 +188,13 @@ int main()
 			OffsetX++;
 		}
 
-		//Particles Black Keys
+		//Update: Create Particles Black Keys
 		OffsetX = 0;
 		for (int I1 = 0; I1 < 128; I1++)
 		{
-			int Note = I1 % 12;
-			bool IsBlackKey = false;
-			if (Note == 1) { IsBlackKey = true; }
-			if (Note == 3) { IsBlackKey = true; }
-			if (Note == 6) { IsBlackKey = true; }
-			if (Note == 8) { IsBlackKey = true; }
-			if (Note == 10) { IsBlackKey = true; }
-
-			if (!IsBlackKey) { continue; }
+			if (((1354 >> (I1 % 12)) % 2) == 0) { continue; }
 
 			int X = OffsetX * 17 + 13;
-			int Y = Height - 52;
 
 			if (VelocityVector[I1] > 0)
 			{
@@ -317,9 +207,9 @@ int main()
 				NewParticle.AcellerationY = -(rand() / (float)RAND_MAX) - 0.01;
 
 				NewParticle.MaxVelocity = NoteSpeed;
-				NewParticle.R = BarR * VelocityVector[I1] / 255;
-				NewParticle.G = BarG * VelocityVector[I1] / 255;
-				NewParticle.B = BarB * VelocityVector[I1] / 255;
+				NewParticle.R = BlackBarR * VelocityVector[I1] / 255;
+				NewParticle.G = BlackBarG * VelocityVector[I1] / 255;
+				NewParticle.B = BlackBarB * VelocityVector[I1] / 255;
 				NewParticle.Fading = 0.99;
 				NewParticle.ParticleModulationX = BarsCount - 1;
 
@@ -327,11 +217,11 @@ int main()
 			}
 
 			OffsetX++;
-			if (Note == 3) { OffsetX++; }
-			if (Note == 10) { OffsetX++; }
+			if (I1 % 12 == 3) { OffsetX++; }
+			if (I1 % 12 == 10) { OffsetX++; }
 		}
 
-		//Particles
+		//Update: Move Particles
 		for (int I = 0; I < ParticleVector.size(); I++)
 		{
 			ParticleVector[I].AcellerationX = sin(D2R * Frame * ParticleVector[I].PositionY * ParticleVector[I].ParticleModulationX) * 0.01 * (BarsCount + 1);
@@ -363,7 +253,16 @@ int main()
 				ParticleVector.erase(ParticleVector.begin() + I);
 				continue;
 			}
+		}
 
+
+
+		SDL_SetRenderDrawColor(SdlRenderer, 0, 0, 0, 255);
+		SDL_RenderClear(SdlRenderer);
+
+		//Draw: Particles
+		for (int I = 0; I < ParticleVector.size(); I++)
+		{
 			SdlRect.x = ParticleVector[I].PositionX - 1;
 			SdlRect.y = ParticleVector[I].PositionY - 1;
 			SdlRect.w = 3;
@@ -372,33 +271,22 @@ int main()
 			SDL_RenderFillRect(SdlRenderer, &SdlRect);
 		}
 
-		//Bars White Keys
+		//Draw: Bars White Keys
 		OffsetX = 0;
 		for (int I1 = 0; I1 < 128; I1++)
 		{
-			int Note = I1 % 12;
-			bool IsWhiteKey = false;
-			if (Note == 0) { IsWhiteKey = true; }
-			if (Note == 2) { IsWhiteKey = true; }
-			if (Note == 4) { IsWhiteKey = true; }
-			if (Note == 5) { IsWhiteKey = true; }
-			if (Note == 7) { IsWhiteKey = true; }
-			if (Note == 9) { IsWhiteKey = true; }
-			if (Note == 11) { IsWhiteKey = true; }
-
-			if (!IsWhiteKey) { continue; }
+			if (((1354 >> (I1 % 12)) % 2) == 1) { continue; }
 
 			int X = OffsetX * 17 + 3;
-			int Y = Height - 52;
 
 			int RectStart = -1;
 			int RectEnd = -1;
 
 			for (int I2 = 0; I2 < 664; I2++)
 			{
-				int R = BarR * BarArray[I1][I2] * 2 / 255;
-				int G = BarG * BarArray[I1][I2] * 2 / 255;
-				int B = BarB * BarArray[I1][I2] * 2 / 255;
+				int R = WhiteBarR * BarArray[I1][I2] * 2 / 255;
+				int G = WhiteBarG * BarArray[I1][I2] * 2 / 255;
+				int B = WhiteBarB * BarArray[I1][I2] * 2 / 255;
 
 				SDL_SetRenderDrawColor(SdlRenderer, R, G, B, 255);
 
@@ -428,31 +316,22 @@ int main()
 			OffsetX++;
 		}
 
-		//Bars Black Keys
+		//Draw: Bars Black Keys
 		OffsetX = 0;
 		for (int I1 = 0; I1 < 128; I1++)
 		{
-			int Note = I1 % 12;
-			bool IsBlackKey = false;
-			if (Note == 1) { IsBlackKey = true; }
-			if (Note == 3) { IsBlackKey = true; }
-			if (Note == 6) { IsBlackKey = true; }
-			if (Note == 8) { IsBlackKey = true; }
-			if (Note == 10) { IsBlackKey = true; }
-
-			if (!IsBlackKey) { continue; }
+			if (((1354 >> (I1 % 12)) % 2) == 0) { continue; }
 
 			int X = OffsetX * 17 + 13;
-			int Y = Height - 52;
 
 			int RectStart = -1;
 			int RectEnd = -1;
 
 			for (int I2 = 0; I2 < 664; I2++)
 			{
-				int R = BarR * BarArray[I1][I2] * 2 / 255;
-				int G = BarG * BarArray[I1][I2] * 2 / 255;
-				int B = BarB * BarArray[I1][I2] * 2 / 255;
+				int R = BlackBarR * BarArray[I1][I2] / 255;
+				int G = BlackBarG * BarArray[I1][I2] / 255;
+				int B = BlackBarB * BarArray[I1][I2] / 255;
 
 				SDL_SetRenderDrawColor(SdlRenderer, R, G, B, 255);
 
@@ -480,11 +359,86 @@ int main()
 			}
 
 			OffsetX++;
-			if (Note == 3) { OffsetX++; }
-			if (Note == 10) { OffsetX++; }
+			if (I1 % 12 == 3) { OffsetX++; }
+			if (I1 % 12 == 10) { OffsetX++; }
 		}
 
-		//Border
+		//Draw: White Keys
+		OffsetX = 0;
+		for (int I1 = 0; I1 < 128; I1++)
+		{
+			if (((1354 >> (I1 % 12)) % 2) == 1) { continue; }
+
+			int X = OffsetX * 17 + 3;
+
+			if (VelocityVector[I1] > 0)
+			{
+				int R = WhiteBarR * VelocityVector[I1] * 2 / 255;
+				int G = WhiteBarG * VelocityVector[I1] * 2 / 255;
+				int B = WhiteBarB * VelocityVector[I1] * 2 / 255;
+
+				SdlRect.x = X;
+				SdlRect.y = Height - 52;
+				SdlRect.w = 16;
+				SdlRect.h = 49;
+				SDL_SetRenderDrawColor(SdlRenderer, R, G, B, 255);
+				SDL_RenderFillRect(SdlRenderer, &SdlRect);
+			}
+			else
+			{
+				SdlRect.x = X;
+				SdlRect.y = Height - 52;
+				SdlRect.w = 16;
+				SdlRect.h = 49;
+				SDL_SetRenderDrawColor(SdlRenderer, 255, 255, 255, 255);
+				SDL_RenderFillRect(SdlRenderer, &SdlRect);
+			}
+
+			SdlRect.x = X;
+			SdlRect.y = Height - 52;
+			SdlRect.w = 16;
+			SdlRect.h = 49;
+			SDL_RenderDrawRect(SdlRenderer, &SdlRect);
+			OffsetX++;
+		}
+
+		//Draw: Black Keys
+		OffsetX = 0;
+		for (int I1 = 0; I1 < 128; I1++)
+		{
+			if (((1354 >> (I1 % 12)) % 2) == 0) { continue; }
+
+			int X = OffsetX * 17 + 13;
+
+			if (VelocityVector[I1] > 0)
+			{
+				int R = BlackBarR * VelocityVector[I1] / 255;
+				int G = BlackBarG * VelocityVector[I1] / 255;
+				int B = BlackBarB * VelocityVector[I1] / 255;
+
+				SdlRect.x = X;
+				SdlRect.y = Height - 52;
+				SdlRect.w = 13;
+				SdlRect.h = 29;
+				SDL_SetRenderDrawColor(SdlRenderer, R, G, B, 255);
+				SDL_RenderFillRect(SdlRenderer, &SdlRect);
+			}
+			else 
+			{
+				SdlRect.x = X;
+				SdlRect.y = Height - 52;
+				SdlRect.w = 13;
+				SdlRect.h = 29;
+				SDL_SetRenderDrawColor(SdlRenderer, 0, 0, 0, 255);
+				SDL_RenderFillRect(SdlRenderer, &SdlRect);
+			}
+
+			OffsetX++;
+			if (I1 % 12 == 3) { OffsetX++; }
+			if (I1 % 12 == 10) { OffsetX++; }
+		}
+
+		//Draw: Border
 		SdlRect.x = 0;
 		SdlRect.y = 0;
 		SdlRect.w = Width;
@@ -506,11 +460,13 @@ int main()
 		SDL_SetRenderDrawColor(SdlRenderer, 127, 127, 127, 255);
 		SDL_RenderDrawRect(SdlRenderer, &SdlRect);
 
-		//Line Above Keys
+		//Draw: Lines Above Keys
 		SDL_RenderDrawLine(SdlRenderer, 2, Height - 53, Width - 4, Height - 53);
 
-		SDL_RenderPresent(SdlRenderer);
+		SDL_SetRenderDrawColor(SdlRenderer, 63, 63, 63, 255);
+		SDL_RenderDrawLine(SdlRenderer, 3, Height - 54, Width - 6, Height - 54);
 
+		SDL_RenderPresent(SdlRenderer);
 		Frame++;
 	}
 
